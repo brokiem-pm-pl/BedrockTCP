@@ -44,7 +44,7 @@ class TCPSession extends ServerSession{
     public function handlePacket(string $packet): void{
         $this->pendingBuffer .= $packet;
 
-        while(strlen($this->pendingBuffer) > 0){
+        while('' !== $this->pendingBuffer){
             $frameLength = Binary::readInt(substr($this->pendingBuffer, 0, 4));
             $payload = substr($this->pendingBuffer, 4, $frameLength);
             if($frameLength !== strlen($payload)){

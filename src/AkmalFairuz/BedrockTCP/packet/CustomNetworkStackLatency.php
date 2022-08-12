@@ -6,7 +6,7 @@ namespace AkmalFairuz\BedrockTCP\packet;
 
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 
-class NSL extends NetworkStackLatencyPacket{
+class CustomNetworkStackLatency extends NetworkStackLatencyPacket{
 
     public function canBeSentBeforeLogin(): bool{
         return true;

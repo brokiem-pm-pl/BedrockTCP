@@ -19,7 +19,7 @@ use const ZLIB_ENCODING_RAW;
 
 class TCPCompressor implements Compressor{
 
-    const COMPRESSION_LEVEL = 2;
+    public const COMPRESSION_LEVEL = 2;
 
     use SingletonTrait;
 
@@ -38,7 +38,7 @@ class TCPCompressor implements Compressor{
     }
 
     public function decompress(string $payload): string{
-        $compressAlgo = substr($payload, 0, 1);
+        $compressAlgo = $payload[0];
         $payload = substr($payload, 1);
         if($compressAlgo === "\x00") {
             $result = @zlib_decode($payload);

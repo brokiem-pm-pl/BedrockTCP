@@ -7,15 +7,15 @@ namespace AkmalFairuz\BedrockTCP;
 use AkmalFairuz\BedrockTCP\network\TCPNetworkSession;
 use AkmalFairuz\BedrockTCP\network\TCPServerManager;
 use AkmalFairuz\BedrockTCP\network\TCPSession;
-use AkmalFairuz\BedrockTCP\packet\NSL;
+use AkmalFairuz\BedrockTCP\packet\CustomNetworkStackLatency;
 use pocketmine\event\Listener;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\TickSyncPacket;
+use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
-use function function_exists;
 
 class BedrockTCP extends PluginBase implements Listener{
 
@@ -29,16 +29,16 @@ class BedrockTCP extends PluginBase implements Listener{
         $port = Server::getInstance()->getPort();
         $this->getServer()->getNetwork()->registerInterface(new TCPServerManager($this, $this->getServer(), $this->getServer()->getNetwork(), $ip, $port, TCPSession::class));
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        PacketPool::getInstance()->registerPacket(new NSL());
+        PacketPool::getInstance()->registerPacket(new CustomNetworkStackLatency());
     }
 
     /**
      * @param NetworkInterfaceRegisterEvent $event
      * @priority HIGHEST
      */
-    public function onNetworkInterfaceRegister(NetworkInterfaceRegisterEvent $event) {
+    public function onNetworkInterfaceRegister(NetworkInterfaceRegisterEvent $event): void {
         $interface = $event->getInterface();
-        if(!$interface instanceof TCPServerManager) {
+        if($interface instanceof RakLibInterface) {
             $event->cancel();
         }
     }
@@ -48,11 +48,11 @@ class BedrockTCP extends PluginBase implements Listener{
      * @priority LOWEST
      * @ignoreCancelled true
      */
-    public function onDataPacketReceive(DataPacketReceiveEvent $event) {
+    public function onDataPacketReceive(DataPacketReceiveEvent $event): void {
         $packet = $event->getPacket();
         /** @var TCPNetworkSession $origin */
         $origin = $event->getOrigin();
-        if($packet instanceof NSL) {
+        if($packet instanceof CustomNetworkStackLatency) {
             if($packet->timestamp === 0 && $packet->needResponse) {
                 $origin->sendDataPacket($packet, true);
                 $event->cancel();

@@ -20,7 +20,7 @@ class TCPNetworkSession extends NetworkSession{
     }
 
     public function getPing(): int{
-        return $this->downstreamPing;
+        return $this->upstreamPing;
     }
 
     public function getTotalPing(): int{
